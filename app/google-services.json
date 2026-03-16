@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "79760855735",
+    "project_id": "bus-schedules-db",
+    "storage_bucket": "bus-schedules-db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:79760855735:android:9acd1a6e426bfa50c8b332",
+        "android_client_info": {
+          "package_name": "mx.com.marcoramirezg.horariosdeautobus"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIlwf37KWKW_L345GQz8mEzApMo2rzkA8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
