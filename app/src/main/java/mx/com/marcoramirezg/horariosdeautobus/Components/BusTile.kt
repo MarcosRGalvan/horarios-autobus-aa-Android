@@ -20,8 +20,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import mx.com.marcoramirezg.horariosdeautobus.Data.Models.HomeItem
+import mx.com.marcoramirezg.horariosdeautobus.R
 
 @Composable
 fun BusTile(
@@ -46,11 +50,9 @@ fun BusTile(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = null,
-                tint = Color(0xFFF57C00),
-                modifier = Modifier.size(32.dp)
+            Text(
+                text = "🚌",
+                fontSize = 28.sp
             )
 
             Spacer(modifier = Modifier.height(8.dp))
