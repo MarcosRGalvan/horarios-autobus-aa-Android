@@ -40,15 +40,22 @@ class MainActivity : ComponentActivity() {
                                 navController.popBackStack()
                             },
                             onRutaClick = { rutaId ->
-                                navController.navigate("detalle_ruta/${rutaId}")
+                                navController.navigate("detalle_ruta/$id/$rutaId/$titulo")
                             }
                         )
                     }
 
-                    composable("detalle_ruta/{rutaId}") { backStackEntry ->
-                        val rutaId = backStackEntry.arguments?.getString("rutaId") ?: ""
+                    composable("detalle_ruta/{lineaId}/{rutaId}/{titulo}") { backStackEntry ->
+                        val lId = backStackEntry.arguments?.getString("lineaId") ?: ""
+                        val rId = backStackEntry.arguments?.getString("rutaId") ?: ""
+                        val title = backStackEntry.arguments?.getString("titulo") ?: ""
 
-                        HorariosRutaView(rutaId = rutaId, onBack = { navController.popBackStack() })
+                        HorariosRutaView(
+                            lineaId = lId,
+                            rutaId = rId,
+                            tituloRuta = title,
+                            onBack = { navController.popBackStack() }
+                        )
                     }
                 }
             }

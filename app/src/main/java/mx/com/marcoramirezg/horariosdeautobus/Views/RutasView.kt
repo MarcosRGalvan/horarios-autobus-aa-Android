@@ -76,7 +76,7 @@ fun RutasContent(
     onRutaClick: (String) -> Unit
 ) {
     val fondoGradiente = Brush.verticalGradient(
-        colors = listOf(Color(0xFFF57C00).copy(alpha = 0.8f), Color.White)
+        colors = listOf(Color(0xFF14AACF).copy(alpha = 0.8f), Color.White)
     )
 
     Box(modifier = Modifier.fillMaxSize().background(fondoGradiente)) {

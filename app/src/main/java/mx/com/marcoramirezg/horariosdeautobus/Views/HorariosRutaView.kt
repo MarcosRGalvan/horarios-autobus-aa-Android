@@ -1,30 +1,101 @@
 package mx.com.marcoramirezg.horariosdeautobus.Views
 
+import android.annotation.SuppressLint
+import android.graphics.drawable.Icon
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import mx.com.marcoramirezg.horariosdeautobus.Data.Models.Horario
+import mx.com.marcoramirezg.horariosdeautobus.ViewModels.HorarioViewModel
+import mx.com.marcoramirezg.horariosdeautobus.ui.theme.HorariosDeAutobusTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HorariosRutaView(rutaId: String, onBack: () -> Unit) {
+fun HorariosRutaView(
+    lineaId: String,
+    rutaId: String,
+    tituloRuta: String,
+    viewModel: HorarioViewModel = viewModel(),
+    onBack: () -> Unit
+) {
+    val horarios by viewModel.horarios.collectAsState()
+    val cargando by viewModel.cargando.collectAsState()
+
+    LaunchedEffect(lineaId, rutaId) {
+        viewModel.fetchHorarios(lineaId, rutaId)
+    }
+
+    HorariosRutaContent(
+        titulo = tituloRuta,
+        horarios = horarios,
+        estaCargando = cargando,
+        onBack = onBack
+    )
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HorariosRutaContent(
+    titulo: String,
+    horarios: List<Horario>,
+    estaCargando: Boolean,
+    onBack: () -> Unit
+) {
+    val fondoGradiente = Brush.verticalGradient(
+        colors = listOf(Color(0xFF14AACF).copy(alpha = 0.1f), Color.White)
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Horarios de la Ruta") },
+                title = {
+                    Column {
+                        Text(titulo, style = MaterialTheme.typography.titleLarge)
+                        Text("Horarios Disponibles", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
@@ -33,16 +104,97 @@ fun HorariosRutaView(rutaId: String, onBack: () -> Unit) {
             )
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(Icons.Default.Notifications, contentDescription = null)
-            Text("Horarios de la ruta: ${rutaId}")
-            Text("Próximamente horarios", style = MaterialTheme.typography.bodySmall)
+        Box(modifier = Modifier.fillMaxSize().padding(padding).background(fondoGradiente)) {
+            when {
+                estaCargando -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Color(0xFF14AACF))
+                    }
+                }
+                horarios.isEmpty() -> {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = Color.Gray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text("No hay horarios disponibles", color = Color.Gray)
+                        Text("Prueba con otra ruta", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(horarios.filter { it.activa }) { horario ->
+                            HorarioItemRow(horario)
+                        }
+                    }
+                }
+            }
         }
+    }
+}
+
+
+@Composable
+fun HorarioItemRow(horario: Horario) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.LocationOn,
+                contentDescription = null,
+                tint = Color(0xFF14AACF),
+                modifier = Modifier.size(28.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column {
+                Text(
+                    text = "Salida: ${horario.salida}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                Text(
+                    text = "Llegada: ${horario.llegada}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Red
+                )
+                Text(
+                    text = "Turno: ${horario.turno}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.DarkGray
+                )
+            }
+        }
+    }
+}
+
+
+@Preview(showBackground = true, device = "id:pixel_9")
+@Composable
+fun HorariosPreview() {
+    val mock = listOf(
+        Horario(salida = "07:00 AM", llegada = "08:00", turno = "Mañana"),
+        Horario(salida = "08:30 AM", llegada = "08:00", turno = "Mañana"),
+        Horario(salida = "01:15 PM", llegada = "08:00", turno = "Tarde")
+    )
+    HorariosDeAutobusTheme {
+        HorariosRutaContent(titulo = "Apaseo - Celaya", horarios = mock, estaCargando = false, onBack = {})
     }
 }
