@@ -33,6 +33,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -85,57 +87,74 @@ fun HorariosRutaContent(
     onBack: () -> Unit
 ) {
     val fondoGradiente = Brush.verticalGradient(
-        colors = listOf(Color(0xFF14AACF).copy(alpha = 0.1f), Color.White)
+        colors = listOf(
+            Color(0xFF14AACF).copy(alpha = 0.9f),
+            MaterialTheme.colorScheme.surface
+        ),
+        startY = 0f,
+        endY = 1500f
     )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(titulo, style = MaterialTheme.typography.titleLarge)
-                        Text("Horarios Disponibles", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+    Box(modifier = Modifier.fillMaxSize().background(fondoGradiente)) {
+        Scaffold(
+            containerColor = Color.Transparent,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text(titulo, style = MaterialTheme.typography.titleLarge)
+                            Text("Horarios Disponibles", style = MaterialTheme.typography.bodySmall, color = Color.DarkGray)
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+            }
+        ) { padding ->
+            Box(modifier = Modifier.fillMaxSize().padding(padding).background(fondoGradiente)) {
+                when {
+                    estaCargando -> {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(color = Color(0xFF14AACF))
+                        }
                     }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    horarios.isEmpty() -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Text("No hay horarios disponibles", color = Color.Gray)
+                            Text("Prueba con otra ruta", style = MaterialTheme.typography.bodySmall)
+                        }
                     }
-                }
-            )
-        }
-    ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).background(fondoGradiente)) {
-            when {
-                estaCargando -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = Color(0xFF14AACF))
-                    }
-                }
-                horarios.isEmpty() -> {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = Color.Gray,
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Text("No hay horarios disponibles", color = Color.Gray)
-                        Text("Prueba con otra ruta", style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(horarios.filter { it.activa }) { horario ->
-                            HorarioItemRow(horario)
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(horarios.filter { it.activa }) { horario ->
+                                HorarioItemRow(horario)
+                            }
                         }
                     }
                 }
@@ -150,10 +169,11 @@ fun HorarioItemRow(horario: Horario) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        //colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(1.0f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(20.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -189,9 +209,10 @@ fun HorarioItemRow(horario: Horario) {
                     .padding(horizontal = 12.dp, vertical = 6.dp)
             ) {
                 Text(
-                    text = horario.turno,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.DarkGray
+                    text = horario.turno.replaceFirstChar { it.uppercase() },
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color(0xFF14AACF),
+                    fontWeight = FontWeight.Bold
                 )
             }
         }

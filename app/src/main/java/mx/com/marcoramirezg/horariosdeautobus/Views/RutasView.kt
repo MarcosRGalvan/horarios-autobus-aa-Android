@@ -76,7 +76,12 @@ fun RutasContent(
     onRutaClick: (String) -> Unit
 ) {
     val fondoGradiente = Brush.verticalGradient(
-        colors = listOf(Color(0xFF14AACF).copy(alpha = 0.8f), Color.White)
+        colors = listOf(
+            Color(0xFF14AACF).copy(alpha = 0.9f),
+            MaterialTheme.colorScheme.background
+        ),
+        startY = 0f,
+        endY = 1500f
     )
 
     Box(modifier = Modifier.fillMaxSize().background(fondoGradiente)) {
@@ -87,10 +92,18 @@ fun RutasContent(
                     title = { Text(titulo) },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Regresar")
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Regresar",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
                         }
                     },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                    )
                 )
             }
         ) { paddingValues ->

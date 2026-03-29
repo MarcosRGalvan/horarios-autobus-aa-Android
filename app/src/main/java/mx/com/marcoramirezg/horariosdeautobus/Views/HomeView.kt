@@ -94,7 +94,9 @@ fun HomeContent(
         colors = listOf(
             Color(0xFF14AACF).copy(alpha = 0.9f),
             MaterialTheme.colorScheme.background
-        )
+        ),
+        startY = 0f,
+        endY = 1500f
     )
 
     Box(modifier = Modifier.fillMaxSize().background(fondoGradiente)) {
@@ -151,7 +153,8 @@ fun HomeContent(
                             text = "Consulta los horarios de autobuses",
                             style = MaterialTheme.typography.headlineMedium,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(horizontal = 16.dp)
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
