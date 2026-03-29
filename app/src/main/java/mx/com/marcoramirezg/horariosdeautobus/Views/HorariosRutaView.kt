@@ -49,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import mx.com.marcoramirezg.horariosdeautobus.Data.Models.Horario
 import mx.com.marcoramirezg.horariosdeautobus.ViewModels.HorarioViewModel
 import mx.com.marcoramirezg.horariosdeautobus.ui.theme.HorariosDeAutobusTheme
+import mx.com.marcoramirezg.horariosdeautobus.utilities.formatearHora
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -162,21 +163,33 @@ fun HorarioItemRow(horario: Horario) {
                 modifier = Modifier.size(28.dp)
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column {
                 Text(
-                    text = "Salida: ${horario.salida}",
-                    style = MaterialTheme.typography.headlineSmall,
+                    text = "Salida: ${formatearHora(horario.salida)}",
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.ExtraBold
                 )
                 Text(
-                    text = "Llegada: ${horario.llegada}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Red
+                    text = "Llegada estimada: ${formatearHora(horario.llegada)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF14AACF)
                 )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFF14AACF).copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(50.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
                 Text(
-                    text = "Turno: ${horario.turno}",
+                    text = horario.turno,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.DarkGray
                 )
@@ -190,9 +203,9 @@ fun HorarioItemRow(horario: Horario) {
 @Composable
 fun HorariosPreview() {
     val mock = listOf(
-        Horario(salida = "07:00 AM", llegada = "08:00", turno = "Mañana"),
-        Horario(salida = "08:30 AM", llegada = "08:00", turno = "Mañana"),
-        Horario(salida = "01:15 PM", llegada = "08:00", turno = "Tarde")
+        Horario(salida = "07:00", llegada = "08:00", turno = "Mañana"),
+        Horario(salida = "08:30", llegada = "08:00", turno = "Mañana"),
+        Horario(salida = "01:15", llegada = "08:00", turno = "Tarde")
     )
     HorariosDeAutobusTheme {
         HorariosRutaContent(titulo = "Apaseo - Celaya", horarios = mock, estaCargando = false, onBack = {})
