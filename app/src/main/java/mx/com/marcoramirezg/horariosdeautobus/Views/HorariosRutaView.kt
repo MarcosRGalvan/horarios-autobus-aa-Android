@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Notifications
@@ -177,7 +179,7 @@ fun HorarioItemRow(horario: Horario) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.LocationOn,
+                imageVector = Icons.Default.Home,
                 contentDescription = null,
                 tint = Color(0xFF14AACF),
                 modifier = Modifier.size(28.dp)
@@ -196,6 +198,22 @@ fun HorarioItemRow(horario: Horario) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(0xFF14AACF)
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = Color(0xFF14AACF)
+                    )
+                    Text(
+                        text = horario.diasAbreviados,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -224,9 +242,9 @@ fun HorarioItemRow(horario: Horario) {
 @Composable
 fun HorariosPreview() {
     val mock = listOf(
-        Horario(salida = "07:00", llegada = "08:00", turno = "Mañana"),
-        Horario(salida = "08:30", llegada = "08:00", turno = "Mañana"),
-        Horario(salida = "01:15", llegada = "08:00", turno = "Tarde")
+        Horario(salida = "07:00", llegada = "08:00", turno = "Mañana", dias = listOf("Lunes", "Martes", "Miércoles")),
+        Horario(salida = "08:30", llegada = "08:00", turno = "Mañana", dias = listOf("Sábado", "Domingo")),
+        Horario(salida = "01:15", llegada = "08:00", turno = "Tarde", dias = listOf("Lunes", "Domingo"))
     )
     HorariosDeAutobusTheme {
         HorariosRutaContent(titulo = "Apaseo - Celaya", horarios = mock, estaCargando = false, onBack = {})

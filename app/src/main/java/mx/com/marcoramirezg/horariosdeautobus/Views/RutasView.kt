@@ -1,5 +1,6 @@
 package mx.com.marcoramirezg.horariosdeautobus.Views
 
+import android.icu.text.StringSearch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +18,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -31,11 +36,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,17 +59,28 @@ fun RutasView(
     titulo: String,
     viewModel: RutaViewModel = viewModel(),
     onBack: () -> Unit,
-    onRutaClick: (String) -> Unit
+    onRutaClick: (String, String) -> Unit
 ) {
     val rutas by viewModel.rutas.collectAsState()
+    var searchText by remember { mutableStateOf("") }
 
     LaunchedEffect(lineaId) {
         viewModel.fetchRutas(lineaId)
     }
 
+    val rutasFiltradas = remember(rutas, searchText) {
+        rutas.filter { it.activa }.filter {
+            it.nombre.contains(searchText, ignoreCase = true) ||
+                    it.origen.contains(searchText, ignoreCase = true) ||
+                    it.destino.contains(searchText, ignoreCase = true)
+        }
+    }
+
     RutasContent(
         titulo = titulo,
-        rutas = rutas,
+        rutas = rutasFiltradas,
+        searchText = searchText,
+        onSearchChange = { searchText = it },
         onBack = onBack,
         onRutaClick = onRutaClick
     )
@@ -72,8 +92,10 @@ fun RutasView(
 fun RutasContent(
     titulo: String,
     rutas: List<Ruta>,
+    searchText: String,
+    onSearchChange: (String) -> Unit,
     onBack: () -> Unit,
-    onRutaClick: (String) -> Unit
+    onRutaClick: (String, String) -> Unit
 ) {
     val fondoGradiente = Brush.verticalGradient(
         colors = listOf(
@@ -107,68 +129,77 @@ fun RutasContent(
                 )
             }
         ) { paddingValues ->
-            LazyColumn(
-                modifier = Modifier.padding(paddingValues).fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .fillMaxSize()
             ) {
-                items(rutas.filter { it.activa }) { ruta ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 4.dp)
-                            .clickable {
-                                onRutaClick(ruta.id)
-                            },
-                        shape = RoundedCornerShape(12.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = ruta.nombre,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    //color = Color(0xFFF57C00)
-                                )
+                OutlinedTextField(
+                    value = searchText,
+                    onValueChange = onSearchChange,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    placeholder = { Text("Buscar ruta, origen o destino...") },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                    shape = RoundedCornerShape(15.dp),
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                        focusedBorderColor = Color(0xFF14AACF),
+                        unfocusedBorderColor = Color.Gray.copy(alpha = 0.5f)
+                    )
+                )
 
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(
-                                        text = "De: ${ruta.origen}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-
-                                    Text(
-                                        text = " • ",
-                                        color = Color.Gray
-                                    )
-
-                                    Text(
-                                        text = "A: ${ruta.destino}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-
-                                    Spacer(modifier = Modifier.weight(1f))
-
-                                    Text(
-                                        text = "$: ${ruta.precio}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = Color.Gray
-                                    )
-                                }
-                            }
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    if (rutas.isEmpty() && searchText.isNotEmpty()) {
+                        item {
+                            Text(
+                                "No se encontraron resultados",
+                                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
+
+                    items(rutas) { ruta ->
+                        RutaCard(ruta = ruta, onRutaClick = onRutaClick)
+                    }
                 }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun RutaCard(ruta: Ruta, onRutaClick: (String, String) -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onRutaClick(ruta.id, ruta.nombre) },
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = ruta.nombre, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "De: ${ruta.origen} • A: ${ruta.destino}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Gray
+                )
             }
         }
     }
@@ -185,6 +216,7 @@ fun RutasPreview() {
         //Ruta(id = "3", nombre = "Directo Centro", origen = "09:15 AM", destino = "Mercado")
     )
 
+    /*
     HorariosDeAutobusTheme {
         RutasContent (
             titulo = "Rojos",
@@ -192,5 +224,5 @@ fun RutasPreview() {
             onBack = { },
             onRutaClick = { }
         )
-    }
+    } */
 }
