@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import mx.com.marcoramirezg.horariosdeautobus.Components.BannerAdView
 import mx.com.marcoramirezg.horariosdeautobus.Data.Models.Horario
 import mx.com.marcoramirezg.horariosdeautobus.ViewModels.HorarioViewModel
 import mx.com.marcoramirezg.horariosdeautobus.ui.theme.HorariosDeAutobusTheme
@@ -123,7 +124,8 @@ fun HorariosRutaContent(
                         navigationIconContentColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
-            }
+            },
+            bottomBar = { BannerAdView() }
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(padding).background(fondoGradiente)) {
                 when {

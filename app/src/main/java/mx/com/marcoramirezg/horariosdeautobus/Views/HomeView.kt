@@ -50,6 +50,7 @@ import mx.com.marcoramirezg.horariosdeautobus.Data.Models.HomeItem
 import mx.com.marcoramirezg.horariosdeautobus.R
 import mx.com.marcoramirezg.horariosdeautobus.ViewModels.HomeViewModel
 import mx.com.marcoramirezg.horariosdeautobus.ui.theme.HorariosDeAutobusTheme
+import mx.com.marcoramirezg.horariosdeautobus.Components.BannerAdView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,7 +116,8 @@ fun HomeContent(
                         }
                     }
                 )
-            }
+            },
+            bottomBar = { BannerAdView() }
         ) { paddingValues ->
 
             LazyVerticalGrid(

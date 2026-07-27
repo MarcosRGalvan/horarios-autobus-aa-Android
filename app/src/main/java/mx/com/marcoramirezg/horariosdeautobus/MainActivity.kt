@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.ads.MobileAds
 import mx.com.marcoramirezg.horariosdeautobus.Components.Screen
 import mx.com.marcoramirezg.horariosdeautobus.Views.HomeView
 import mx.com.marcoramirezg.horariosdeautobus.Views.HorariosRutaView
@@ -60,5 +61,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+        MobileAds.initialize(this) {}
     }
 }
