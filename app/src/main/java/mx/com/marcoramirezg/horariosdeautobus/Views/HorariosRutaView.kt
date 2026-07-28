@@ -183,7 +183,7 @@ fun HorarioItemRow(horario: Horario) {
             Icon(
                 imageVector = Icons.Default.Home,
                 contentDescription = null,
-                tint = Color(0xFF14AACF),
+                tint = Color(0xFFF59E0B),
                 modifier = Modifier.size(28.dp)
             )
 
@@ -198,7 +198,7 @@ fun HorarioItemRow(horario: Horario) {
                 Text(
                     text = "Llegada estimada: ${formatearHora(horario.llegada)}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color(0xFF14AACF)
+                    color = Color(0xFFF59E0B)
                 )
 
                 Row(
@@ -208,7 +208,7 @@ fun HorarioItemRow(horario: Horario) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = null,
-                        tint = Color(0xFF14AACF)
+                        tint = Color(0xFFF59E0B)
                     )
                     Text(
                         text = horario.diasAbreviados,
@@ -223,7 +223,7 @@ fun HorarioItemRow(horario: Horario) {
             Box(
                 modifier = Modifier
                     .background(
-                        color = Color(0xFF14AACF).copy(alpha = 0.1f),
+                        color = Color(0xFF0F172A).copy(alpha = 0.1f),
                         shape = RoundedCornerShape(50.dp)
                     )
                     .padding(horizontal = 12.dp, vertical = 6.dp)
@@ -231,7 +231,7 @@ fun HorarioItemRow(horario: Horario) {
                 Text(
                     text = horario.turno.replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFF14AACF),
+                    color = Color(0xFF0891B2),
                     fontWeight = FontWeight.Bold
                 )
             }

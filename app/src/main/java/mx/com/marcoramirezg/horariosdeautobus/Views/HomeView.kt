@@ -93,7 +93,7 @@ fun HomeContent(
 
     val fondoGradiente = Brush.verticalGradient(
         colors = listOf(
-            Color(0xFF14AACF).copy(alpha = 0.9f),
+            Color(0xFF22D3EE).copy(alpha = 0.9f),
             MaterialTheme.colorScheme.background
         ),
         startY = 0f,
